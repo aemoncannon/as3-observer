@@ -1,4 +1,7 @@
-An AS3 library inspired by the C# Rx framework.
+An AS3 library inspired by the C# Rx framework. Just a proof of concept so far.
+
+
+
 
 
 Here's how you might synthesize a mouseDrag event:
