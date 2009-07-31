@@ -1,0 +1,19 @@
+An AS3 library inspired by the C# Rx framework.
+
+
+Here's how you might synthesize a mouseDrag event:
+
+
+var circle:Sprite = new Sprite();
+
+var mouseDown:IObservable = Obs.es(circle, "onMouseDown");
+var mouseMove:IObservable = Obs.es(circle, "onMouseMove");
+var mouseUp:IObservable = Obs.es(circle, "onMouseUp");
+
+var mouseDrag:IObservable = mouseDown.selectMany(function(ea:Event):IObservable{
+		return mouseMove.until(mouseUp).select(function(ea:Event):Event{ return new Event("onMouseDrag"); });
+	});
+
+mouseDrag.attach(Obs.f(function(ea:String):void{
+			trace("Just got a drag event!");
+		}));
