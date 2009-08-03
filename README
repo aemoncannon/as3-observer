@@ -20,3 +20,36 @@ var mouseDrag:IObservable = mouseDown.selectMany(function(ea:Event):IObservable{
 mouseDrag.attach(Obs.f(function(ea:String):void{
 			trace("Just got a drag event!");
 		}));
+
+
+
+
+
+Here's a 3 key sequence, automatically cancelled if the wrong key is pressed.
+
+
+// Helper for making an IObservable of key events of a specific type
+function keyStream(key:int):IObservable{
+	 return Obs.es(stage, "onKeyDown").select(function(e:KeyboardEvent):Boolean{ return e.keyCode == key; })
+}
+
+// Helper for making an IObservable of key events that are NOT a specific type
+function notKeyStream(key:int):IObservable{
+	 return Obs.es(stage, "onKeyDown").select(function(e:KeyboardEvent):Boolean{ return e.keyCode != key; })
+}
+
+// Wait for an 'a'
+var abcPressed:IObservable = keyStream(Keyboard.A).selectMany(function(ea:Event):IObservable{
+                // then wait for a 'b', but cancel if something else is pressed 
+		return keyStream(Keyboard.B).until(notKeyStream(Keyboard.B)).selectMany(function(ea:Event):IObservable{
+                  // then wait for a 'c', but cancel if something else is pressed 
+		  return keyStream(Keyboard.C).until(notKeyStream(Keyboard.C)).select(function(ea:Event):Event{ 
+		    // dispatch the our new event
+		    return new Event("onABC"); 
+		  });
+	       });
+	});
+
+abcPressed.attach(Obs.f(function(ea:Event):void{
+			trace("a,b,c has been pressed!");
+		}));
